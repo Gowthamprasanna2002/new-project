@@ -9,8 +9,8 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 const GITHUB_API_URL = 'https://api.github.com';
-const OWNER = 'your-github-username';
-const REPO = 'your-repo-name';
+const OWNER = 'Gowthamprasanna2002';
+const REPO = 'new-project';
 
 app.post('/submit', async (req, res) => {
   const { name, message } = req.body;
