@@ -13,23 +13,62 @@
   <div id="result"></div>
 
   <script>
+    const GITHUB_TOKEN = "YOUR_GITHUB_TOKEN"; // ⚠️ Keep this private in production!
+    const REPO_OWNER = "YOUR_GITHUB_USERNAME";
+    const REPO_NAME = "YOUR_REPO_NAME";
+    const FILE_PATH = "messages.txt"; // The file where messages will be saved
+
     document.getElementById('myForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const form = e.target;
-      const data = {
-        name: form.name.value,
-        message: form.message.value
-      };
+      const newMessage = `Name: ${form.name.value}\nMessage: ${form.message.value}\n---\n`;
 
-      const res = await fetch('/submit', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-      });
+      try {
+        // 1️⃣ Get the current file from GitHub to append data
+        const fileRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`
+          }
+        });
 
-      const result = await res.text();
-      document.getElementById('result').innerText = result;
-      form.reset();
+        let fileSHA = null;
+        let content = "";
+
+        if (fileRes.status === 200) {
+          const fileData = await fileRes.json();
+          fileSHA = fileData.sha;
+          content = atob(fileData.content);
+        }
+
+        // 2️⃣ Append the new message
+        content += newMessage;
+
+        // 3️⃣ Update (or create) the file on GitHub
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: "New message from form",
+            content: btoa(content),
+            sha: fileSHA || undefined
+          })
+        });
+
+        if (res.ok) {
+          document.getElementById('result').innerText = "Message saved to GitHub!";
+          form.reset();
+        } else {
+          document.getElementById('result').innerText = "Error saving message.";
+        }
+
+      } catch (error) {
+        console.error(error);
+        document.getElementById('result').innerText = "Something went wrong.";
+      }
     });
   </script>
 </body>
