@@ -13,7 +13,7 @@
   <div id="result"></div>
 
   <script>
-    const GITHUB_TOKEN = "YOUR_GITHUB_TOKEN"; // ⚠️ Keep this private in production!
+    const GITHUB_TOKEN = "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"; // ⚠️ Keep this private in production!
     const REPO_OWNER = "gowthamprasanna2002";
     const REPO_NAME = "new-project";
     const FILE_PATH = "https://github.com/Gowthamprasanna2002/new-project/blob/main/README.md"; // The file where messages will be saved
@@ -28,7 +28,7 @@
         // 1️⃣ Get the current file from GitHub to append data
         const fileRes = await fetch(`https://api.github.com/repos/${gowthamprasanna2002}/${new-project}/contents/$https://github.com/Gowthamprasanna2002/new-project/blob/main/README.md}`, {
           headers: {
-            Authorization: `token ${GITHUB_TOKEN}`
+            Authorization: `token ${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}`
           }
         });
 
